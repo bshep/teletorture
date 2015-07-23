@@ -1,19 +1,23 @@
 <module>
 	<rawname>teletorture</rawname>
 	<name>Telemarketer Torture</name>
-	<version>0.0.4</version>
+	<version>0.0.6</version>
         <description>
            An Endless IVR that you can send Telemarketers to. Based on the work of Steve Murphy.
         </description>
 	<type>setup</type>
-	<category>Third Party Addon</category>
-	<location>contributed_modules/release/teletorture-0.0.4.tgz</location>
+	<category>Applications</category>
+	<location></location>
 	<info></info>
+	<menuitems>
+		<teletorture>Telemarketer Torture</teletorture>
+	</menuitems>
         <changelog>
+		*0.0.6* Fixed the timeout destination now needing a call to to WaitExten to actually go to the 't' extension, also added a configuration page to save the extension, enable disable module and enable disable going to the blacklist
+		*0.0.5* Added Blacklist
                 *0.0.4* Add missing context.. woops no one caught that.... well someone just did hence this change...
 		*0.0.3* Rework ext_goto to be future resistant and be more compliant with API, fix whitespace
         	*0.0.2* Fix case for Pot party so it loops properly...
                 *0.0.1* First Attempt at a module why not telemarketer torture...
         </changelog>
-<md5sum>fe9ec552e62d1181577a2d946deab372</md5sum>
 </module>

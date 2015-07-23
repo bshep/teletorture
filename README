@@ -8,7 +8,8 @@ This is a dial plan that loops and carrys on in an attempt to really annoy Telem
 
 Original Dial Plan Author: Steve Murphy 
 Audio Prompts: Steve Murphy
-Ported to FreePBX module: James Finstrom <jfinstrom [at] gmail [dot] com
+Ported to FreePBX module: James Finstrom <jfinstrom [at] gmail [dot] com>
+Updated to Asterisk 13 and Current FreePBX: bshep <teletorture.bshep [at] xoxy [dot] net>
 
 Kids dont try this at home
 based on:http://www.voip-info.org/wiki/view/Asterisk+AEL+Telemarketer+Torture

@@ -1,12 +1,41 @@
 <?php
 
 function teletorture_get_config($engine) {
-  global $ext;
+  global $ext,$astman;
+
+  //$enabled = false;
+  $featurecode = $astman->database_get('teletorture','featurecode');
+  $enabled = $astman->database_get('teletorture','enabled');
+  $blacklist = $astman->database_get('teletorture','blacklist');
+
+  if(!$enabled) {
+	return;
+  }
+
+  if($blacklist) {
+        $destination = "app-telemarket-blacklist";
+  } else {
+        $destination = "app-telemarket";
+  }
+
+  $ext->addInclude('from-internal-additional', 'app-telemarket-hook');
+
   switch($engine) {
     case 'asterisk':
+    // our hook into the dialplan
+      $ext->add('app-telemarket-hook', $featurecode, '', new ext_goto('begin','s',$destination));
+
+    //blacklist number and then teletorture
+      $ext->add('app-telemarket-blacklist', 's', 'begin', new ext_set('lastcaller','${DB(CALLTRACE/${CALLERID(number)})}'));
+      $ext->add('app-telemarket-blacklist', 's', '', new ext_gotoif('$[ $[ "${lastcaller}" = "" ] | $[ "${lastcaller}" = "unknown" ] ]', 'noinfo'));
+      $ext->add('app-telemarket-blacklist', 's', '', new ext_set('DB(blacklist/${lastcaller})','1'));
+      $ext->add('app-telemarket-blacklist', 's', 'noinfo', new ext_noop('Unidentified Caller'));
+      $ext->add('app-telemarket-blacklist', 's', '', new ext_goto('begin','s','app-telemarket'));
+
     //teletorture. intro
       $ext->add('app-telemarket', 's', 'begin', new ext_background('telemarketer-intro'));
       $ext->add('app-telemarket', 's', '', new ext_background('telemarketer-choices'));
+      $ext->add('app-telemarket', 's', '', new ext_waitexten('3'));
       $ext->add('app-telemarket', '1', '', new ext_goto('begin','s','app-telemarket-charity'));
       $ext->add('app-telemarket', '2', '', new ext_goto('begin','s','app-telemarket-political'));
       $ext->add('app-telemarket', '3', '', new ext_goto('begin','s','app-telemarket-pollster'));
@@ -20,6 +49,7 @@ function teletorture_get_config($engine) {
       //app-telemarket-charity
       $ext->add('app-telemarket-charity', 's', 'begin', new ext_background('telemark-charity-intro'));
       $ext->add('app-telemarket-charity', 's', '', new ext_background('telemark-charity-choices'));
+      $ext->add('app-telemarket-charity', 's', '', new ext_waitexten('3'));
       $ext->add('app-telemarket-charity', '1', '', new ext_goto('begin','s','app-telemarket-char-disease'));
       $ext->add('app-telemarket-charity', '2', '', new ext_goto('begin','s','app-telemarket-char-handicap'));
       $ext->add('app-telemarket-charity', '3', '', new ext_goto('begin','s','app-telemarket-char-police'));
@@ -51,6 +81,7 @@ function teletorture_get_config($engine) {
       //app-telemarket-political
       $ext->add('app-telemarket-political', 's', 'begin', new ext_background('telemark-polit-intro'));		
       $ext->add('app-telemarket-political', 's', '', new ext_background('telemark-polit-choices'));
+      $ext->add('app-telemarket-political', 's', '', new ext_waitexten('3'));
       $ext->add('app-telemarket-political', '1', '', new ext_goto('begin','s','app-telemarket-poli-Am1st'));		
       $ext->add('app-telemarket-political', '2', '', new ext_goto('begin','s','app-telemarket-poli-American'));
       $ext->add('app-telemarket-political', '3', '', new ext_goto('begin','s','app-telemarket-poli-AmHer'));
@@ -66,6 +97,7 @@ function teletorture_get_config($engine) {
       //app-telemarket-political2
       $ext->add('app-telemarket-political2', 's', 'begin', new ext_background('telemark-politx-intro'));		
       $ext->add('app-telemarket-political2', 's', '', new ext_background('telemark-polit2-choices'));		
+      $ext->add('app-telemarket-political2', 's', '', new ext_waitexten('3'));
       $ext->add('app-telemarket-political2', '1', '', new ext_goto('begin','s','app-telemarket-poli-Communist'));		
       $ext->add('app-telemarket-political2', '2', '', new ext_goto('begin','s','app-telemarket-poli-Constit'));
       $ext->add('app-telemarket-political2', '3', '', new ext_goto('begin','s','app-telemarket-poli-FamVal'));
@@ -81,6 +113,7 @@ function teletorture_get_config($engine) {
       //app-telemarket-political3
       $ext->add('app-telemarket-political3', 's', 'begin', new ext_background('telemark-politx-intro'));		
       $ext->add('app-telemarket-political3', 's', '', new ext_background('telemark-polit3-choices'));	
+      $ext->add('app-telemarket-political3', 's', '', new ext_waitexten('3'));
       $ext->add('app-telemarket-political3', '1', '', new ext_goto('begin','s','app-telemarket-poli-IndAm'));
       $ext->add('app-telemarket-political3', '2', '', new ext_goto('begin','s','app-telemarket-poli-Labor'));
       $ext->add('app-telemarket-political3', '3', '', new ext_goto('begin','s','app-telemarket-poli-Liber'));		
@@ -96,6 +129,7 @@ function teletorture_get_config($engine) {
       //app-telemarket-political4
       $ext->add('app-telemarket-political4', 's', 'begin', new ext_background('telemark-politx-intro'));		
       $ext->add('app-telemarket-political4', 's', '', new ext_background('telemark-polit4-choices'));	
+      $ext->add('app-telemarket-political4', 's', '', new ext_waitexten('3'));
       $ext->add('app-telemarket-political4', '1', '', new ext_goto('begin','s','app-telemarket-poli-Prohib'));
       $ext->add('app-telemarket-political4', '2', '', new ext_goto('begin','s','app-telemarket-poli-Ref'));
       $ext->add('app-telemarket-political4', '3', '', new ext_goto('begin','s','app-telemarket-poli-Revol'));
@@ -111,6 +145,7 @@ function teletorture_get_config($engine) {
       //app-telemarket-political5
       $ext->add('app-telemarket-political5', 's', 'begin', new ext_background('telemark-politx-intro'));		
       $ext->add('app-telemarket-political5', 's', '', new ext_background('telemark-polit5-choices'));	
+      $ext->add('app-telemarket-political5', 's', '', new ext_waitexten('3'));
       $ext->add('app-telemarket-political5', '1', '', new ext_goto('begin','s','app-telemarket-poli-South'));
       $ext->add('app-telemarket-political5', '2', '', new ext_goto('begin','s','app-telemarket-poli-SoInd'));
       $ext->add('app-telemarket-political5', '3', '', new ext_goto('begin','s','app-telemarket-poli-USPac'));
@@ -176,6 +211,7 @@ function teletorture_get_config($engine) {
       $ext->add('app-telemarket-pollster', 'o', '', new ext_goto('begin','s','app-telemarket'));   
       //app-telemarket-magazine
       $ext->add('app-telemarket-magazine', 's', 'begin', new ext_background('telemark-mag-choices'));
+      $ext->add('app-telemarket-magazine', 's', '', new ext_waitexten('3'));
       $ext->add('app-telemarket-magazine', '1', '', new ext_goto('begin','s','app-telemark-mag-new'));
       $ext->add('app-telemarket-magazine', '2', '', new ext_goto('begin','s','app-telemark-mag-renew'));
       $ext->add('app-telemarket-magazine', '3', '', new ext_goto('begin','s','app-telemark-mag-survey'));
@@ -230,8 +266,12 @@ function teletorture_get_config($engine) {
 function teletorture_destinations(){
     return array(
       array(
-         'destination' => 'app-telemarket,begin,1', 
-         'description' => 'Default',
+         'destination' => 'app-telemarket,s,begin', 
+         'description' => 'Torture Only',
+      ),
+      array(
+         'destination' => 'app-telemarket-blacklist,s,begin', 
+         'description' => 'Torture and Blacklist',
       ),
    );
 }
